@@ -1,0 +1,26 @@
+// === src/routes/routeConfig.js ===
+import Dashboard from '../pages/Dashboard';
+import Patients from '../pages/Patients';
+import Appointments from '../pages/Appointments';
+import Consulting from '../pages/Consulting';
+import Lab from '../pages/Lab';
+import Pharmacy from '../pages/Pharmacy';
+import Billing from '../pages/Billing';
+import Users from '../pages/Users';
+import Reports from '../pages/Reports';
+import Settings from '../pages/Settings';
+
+const routes = [
+  { path: '/dashboard', name: 'Dashboard', component: Dashboard, roles: ['admin', 'doctor', 'nurse'] },
+  { path: '/patients', name: 'Patient Registration', component: Patients, roles: ['admin', 'nurse'] },
+  { path: '/appointments', name: 'Appointments', component: Appointments, roles: ['admin', 'receptionist'] },
+  { path: '/consulting', name: 'Consulting', component: Consulting, roles: ['admin', 'doctor'] },
+  { path: '/lab', name: 'Lab', component: Lab, roles: ['admin', 'lab technician'] },
+  { path: '/pharmacy', name: 'Pharmacy', component: Pharmacy, roles: ['admin', 'pharmacist'] },
+  { path: '/billing', name: 'Billing/Claims', component: Billing, roles: ['admin', 'billing officer'] },
+  { path: '/users', name: 'User Management', component: Users, roles: ['admin'] },
+  { path: '/reports', name: 'Reports', component: Reports, roles: ['admin'] },
+  { path: '/settings', name: 'Settings', component: Settings, roles: ['admin'] },
+];
+
+export default routes;
