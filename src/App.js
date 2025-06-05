@@ -1,16 +1,13 @@
+// === src/App.js ===
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import Login from './pages/Login'; // Assuming Login component exists
+import Login from './pages/Login';
 import Sidebar from './components/Sidebar';
-import routeConfig from './routes/routeConfig'; // Assuming routeConfig contains your route definitions
-import DashboardPage from './pages/DashboardPage'; // Dashboard page component
-import AppointmentsPage from './pages/AppointmentsPage'; // Appointments page component
-import PatientsPage from './pages/PatientsPage'; // Patient registration page
+import routeConfig from './routes/routeConfig';
 
 export default function App() {
-  const [user, setUser] = useState({ username: 'test', role: 'admin' }); // Initial user state
+  const [user, setUser] = useState({ username: 'test', role: 'admin' }); // Simulated logged-in user
 
-  // Handle login (set user info upon successful login)
   const handleLogin = (userInfo) => {
     console.log("App → Logged-in user object:", userInfo);
     if (!userInfo?.role) {
@@ -19,28 +16,28 @@ export default function App() {
     setUser(userInfo);
   };
 
-  // Handle logout (clear user state)
   const handleLogout = () => {
     setUser(null);
   };
 
-  // If user is not logged in, show Login page
+  // Show login if no user is logged in
   if (!user) return <Login onLogin={handleLogin} />;
 
   return (
     <Router>
       <div className="flex">
-        {/* Sidebar component with user role and logout functionality */}
+        {/* Sticky Sidebar */}
         <Sidebar userRole={user?.role} onLogout={handleLogout} />
-        <div className="flex-1 p-6 bg-gray-100 min-h-screen">
+
+        {/* Main Content Area with left padding for Sidebar */}
+        <div className="flex-1 pl-64 p-6 bg-gray-100 min-h-screen">
           <Routes>
-            {/* Filter and render routes based on user roles */}
             {routeConfig
-              .filter(route => route.roles.includes(user.role)) // Filter based on user role
+              .filter(route => route.roles.includes(user.role))
               .map(route => (
                 <Route key={route.path} path={route.path} element={<route.component />} />
               ))}
-            {/* Default route redirection to Dashboard */}
+            {/* Fallback route */}
             <Route path="*" element={<Navigate to="/dashboard" />} />
           </Routes>
         </div>
