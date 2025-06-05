@@ -1,51 +1,43 @@
 import React, { useState } from 'react';
+import './login.css';  // Import the login CSS file
 
-const Login = ({ onLogin }) => {
-  const [username, setUsername] = useState('');
+const Login = () => {
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onLogin(username, password);
+    // Add login logic
+    console.log('Email:', email);
+    console.log('Password:', password);
   };
 
   return (
-    <div className="flex items-center justify-center h-screen">
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
-      >
-        <h2 className="text-2xl mb-6 text-center text-blue-700 font-bold">
-          Login
-        </h2>
-        <div className="mb-4">
+    <div className="login-container">
+      <div className="overlay"></div> {/* Optional overlay for darkening the background */}
+      <form onSubmit={handleSubmit} className="login-form">
+        <h2>Login</h2>
+        <div>
+          <label htmlFor="email">Email</label>
           <input
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700"
+            id="email"
             type="text"
-            placeholder="Username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             required
           />
         </div>
-        <div className="mb-6">
+        <div>
+          <label htmlFor="password">Password</label>
           <input
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700"
+            id="password"
             type="password"
-            placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
           />
         </div>
-        <div className="flex items-center justify-between">
-          <button
-            className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full"
-            type="submit"
-          >
-            Sign in
-          </button>
-        </div>
+        <button type="submit">Login</button>
       </form>
     </div>
   );
