@@ -1,146 +1,216 @@
-import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import React, { useState } from 'react';
+import { NavLink } from 'react-router-dom';
 import {
   FaTachometerAlt,
   FaUserPlus,
-  FaCalendarAlt,
+  FaCalendarCheck,
   FaStethoscope,
   FaFlask,
-  FaPills,
-  FaMoneyBillWave,
-  FaUsers,
+  FaFileMedical,
+  FaUserCog,
   FaChartBar,
   FaCog,
-  FaClipboardList,
-  FaBoxOpen,
-  FaExclamationTriangle,
-  FaFileMedical
+  FaSignOutAlt,
+  FaPills,
+  FaChevronDown,
+  FaChevronUp,
 } from 'react-icons/fa';
 
-export default function Sidebar({ userRole, onLogout }) {
-  const location = useLocation();
+const Sidebar = ({ userRole, onLogout }) => {
+  const [showPharmacySubmenu, setShowPharmacySubmenu] = useState(false);
 
-  const isActive = (path) => location.pathname.startsWith(path);
+  const hasAccess = (allowedRoles) => allowedRoles.includes(userRole);
 
   return (
-    <div className="w-64 bg-white shadow-md h-screen sticky top-0 overflow-y-auto">
-      <div className="p-6 text-xl font-bold text-blue-700">EMR System</div>
-      <nav className="px-2">
-        <ul>
-          {(userRole === 'admin' || userRole === 'doctor' || userRole === 'nurse') && (
-            <li className={`py-2 px-4 rounded ${isActive('/dashboard') ? 'bg-blue-100' : ''}`}>
-              <Link to="/dashboard" className="flex items-center gap-2">
-                <FaTachometerAlt /> Dashboard
-              </Link>
-            </li>
-          )}
-          {(userRole === 'admin' || userRole === 'nurse') && (
-            <li className={`py-2 px-4 rounded ${isActive('/patients') ? 'bg-blue-100' : ''}`}>
-              <Link to="/patients" className="flex items-center gap-2">
-                <FaUserPlus /> Patient Registration
-              </Link>
-            </li>
-          )}
-          {(userRole === 'admin' || userRole === 'receptionist') && (
-            <li className={`py-2 px-4 rounded ${isActive('/appointments') ? 'bg-blue-100' : ''}`}>
-              <Link to="/appointments" className="flex items-center gap-2">
-                <FaCalendarAlt /> Appointments
-              </Link>
-            </li>
-          )}
-          {(userRole === 'admin' || userRole === 'doctor') && (
-            <li className={`py-2 px-4 rounded ${isActive('/consulting') ? 'bg-blue-100' : ''}`}>
-              <Link to="/consulting" className="flex items-center gap-2">
-                <FaStethoscope /> Consulting
-              </Link>
-            </li>
-          )}
-          {(userRole === 'admin' || userRole === 'lab technician') && (
-            <li className={`py-2 px-4 rounded ${isActive('/lab') ? 'bg-blue-100' : ''}`}>
-              <Link to="/lab" className="flex items-center gap-2">
-                <FaFlask /> Lab
-              </Link>
-            </li>
-          )}
-          {(userRole === 'admin' || userRole === 'pharmacist') && (
-            <li className={`py-2 px-4 rounded ${isActive('/pharmacy') ? 'bg-blue-100' : ''}`}>
-              <Link to="/pharmacy" className="flex items-center gap-2">
-                <FaPills /> Pharmacy
-              </Link>
-            </li>
-          )}
-          {(userRole === 'admin' || userRole === 'billing officer') && (
-            <li className={`py-2 px-4 rounded ${isActive('/billing') ? 'bg-blue-100' : ''}`}>
-              <Link to="/billing" className="flex items-center gap-2">
-                <FaMoneyBillWave /> Billing/Claims
-              </Link>
-            </li>
-          )}
-          {userRole === 'admin' && (
-            <>
-              <li className={`py-2 px-4 rounded ${isActive('/users') ? 'bg-blue-100' : ''}`}>
-                <Link to="/users" className="flex items-center gap-2">
-                  <FaUsers /> User Management
-                </Link>
-              </li>
-              <li className={`py-2 px-4 rounded ${isActive('/reports') ? 'bg-blue-100' : ''}`}>
-                <Link to="/reports" className="flex items-center gap-2">
-                  <FaChartBar /> Reports
-                </Link>
-              </li>
-              <li className={`py-2 px-4 rounded ${isActive('/settings') ? 'bg-blue-100' : ''}`}>
-                <Link to="/settings" className="flex items-center gap-2">
-                  <FaCog /> Settings
-                </Link>
-              </li>
-            </>
-          )}
-        </ul>
+    <div className="w-64 bg-white shadow-md h-screen sticky top-0">
+      <div className="p-4 text-xl font-bold border-b">EMR System</div>
+      <nav className="flex flex-col p-4 space-y-2">
+        {hasAccess(['admin', 'doctor', 'nurse']) && (
+          <NavLink
+            to="/dashboard"
+            className={({ isActive }) =>
+              `flex items-center space-x-2 p-2 rounded hover:bg-gray-100 ${
+                isActive ? 'bg-gray-200 font-semibold' : ''
+              }`
+            }
+          >
+            <FaTachometerAlt />
+            <span>Dashboard</span>
+          </NavLink>
+        )}
+        {hasAccess(['admin', 'nurse']) && (
+          <NavLink
+            to="/patients"
+            className={({ isActive }) =>
+              `flex items-center space-x-2 p-2 rounded hover:bg-gray-100 ${
+                isActive ? 'bg-gray-200 font-semibold' : ''
+              }`
+            }
+          >
+            <FaUserPlus />
+            <span>Registration</span>
+          </NavLink>
+        )}
+        {hasAccess(['admin', 'receptionist']) && (
+          <NavLink
+            to="/appointments"
+            className={({ isActive }) =>
+              `flex items-center space-x-2 p-2 rounded hover:bg-gray-100 ${
+                isActive ? 'bg-gray-200 font-semibold' : ''
+              }`
+            }
+          >
+            <FaCalendarCheck />
+            <span>Appointments</span>
+          </NavLink>
+        )}
+        {hasAccess(['admin', 'doctor']) && (
+          <NavLink
+            to="/consulting"
+            className={({ isActive }) =>
+              `flex items-center space-x-2 p-2 rounded hover:bg-gray-100 ${
+                isActive ? 'bg-gray-200 font-semibold' : ''
+              }`
+            }
+          >
+            <FaStethoscope />
+            <span>Consulting</span>
+          </NavLink>
+        )}
+        {hasAccess(['admin', 'lab technician']) && (
+          <NavLink
+            to="/lab"
+            className={({ isActive }) =>
+              `flex items-center space-x-2 p-2 rounded hover:bg-gray-100 ${
+                isActive ? 'bg-gray-200 font-semibold' : ''
+              }`
+            }
+          >
+            <FaFlask />
+            <span>Lab</span>
+          </NavLink>
+        )}
 
-        {/* 📦 Advanced Pharmacy Submodules */}
-        {(userRole === 'admin' || userRole === 'pharmacist') && (
-          <div className="mt-6">
-            <h3 className="text-sm font-bold text-gray-500 uppercase px-4 mb-2">Pharmacy</h3>
-            <ul>
-              <li className="px-4 py-2 hover:bg-gray-200 rounded">
-                <Link to="/pharmacy/inventory" className="flex items-center gap-2">
-                  <FaPills /> Inventory
-                </Link>
-              </li>
-              <li className="px-4 py-2 hover:bg-gray-200 rounded">
-                <Link to="/pharmacy/issue" className="flex items-center gap-2">
-                  <FaClipboardList /> Drug Issuing
-                </Link>
-              </li>
-              <li className="px-4 py-2 hover:bg-gray-200 rounded">
-                <Link to="/pharmacy/stock-taking" className="flex items-center gap-2">
-                  <FaBoxOpen /> Stock Taking
-                </Link>
-              </li>
-              <li className="px-4 py-2 hover:bg-gray-200 rounded">
-                <Link to="/pharmacy/expiry-alerts" className="flex items-center gap-2">
-                  <FaExclamationTriangle /> Expiry Alerts
-                </Link>
-              </li>
-              <li className="px-4 py-2 hover:bg-gray-200 rounded">
-                <Link to="/pharmacy/reports" className="flex items-center gap-2">
-                  <FaFileMedical /> Pharmacy Reports
-                </Link>
-              </li>
-            </ul>
+        {/* Pharmacy Main & Submenu */}
+        {hasAccess(['admin', 'pharmacist']) && (
+          <div>
+            <button
+              onClick={() => setShowPharmacySubmenu(!showPharmacySubmenu)}
+              className="flex items-center w-full space-x-2 p-2 rounded hover:bg-gray-100"
+            >
+              <FaPills />
+              <span className="flex-1 text-left">Pharmacy</span>
+              {showPharmacySubmenu ? <FaChevronUp /> : <FaChevronDown />}
+            </button>
+            {showPharmacySubmenu && (
+              <div className="ml-6 mt-1 space-y-1">
+                <NavLink
+                  to="/pharmacy/issue"
+                  className={({ isActive }) =>
+                    `block p-2 rounded hover:bg-gray-100 ${
+                      isActive ? 'bg-gray-200 font-semibold' : ''
+                    }`
+                  }
+                >
+                  Drug Issuing
+                </NavLink>
+                <NavLink
+                  to="/pharmacy/stock-taking"
+                  className={({ isActive }) =>
+                    `block p-2 rounded hover:bg-gray-100 ${
+                      isActive ? 'bg-gray-200 font-semibold' : ''
+                    }`
+                  }
+                >
+                  Stock Taking
+                </NavLink>
+                <NavLink
+                  to="/pharmacy/expiry-alerts"
+                  className={({ isActive }) =>
+                    `block p-2 rounded hover:bg-gray-100 ${
+                      isActive ? 'bg-gray-200 font-semibold' : ''
+                    }`
+                  }
+                >
+                  Expiry Alerts
+                </NavLink>
+                <NavLink
+                  to="/pharmacy/reports"
+                  className={({ isActive }) =>
+                    `block p-2 rounded hover:bg-gray-100 ${
+                      isActive ? 'bg-gray-200 font-semibold' : ''
+                    }`
+                  }
+                >
+                  Pharmacy Reports
+                </NavLink>
+              </div>
+            )}
           </div>
         )}
-      </nav>
 
-      {/* Logout Button */}
-      <div className="p-4">
+        {hasAccess(['admin', 'billing officer']) && (
+          <NavLink
+            to="/billing"
+            className={({ isActive }) =>
+              `flex items-center space-x-2 p-2 rounded hover:bg-gray-100 ${
+                isActive ? 'bg-gray-200 font-semibold' : ''
+              }`
+            }
+          >
+            <FaFileMedical />
+            <span>Billing</span>
+          </NavLink>
+        )}
+        {hasAccess(['admin']) && (
+          <NavLink
+            to="/users"
+            className={({ isActive }) =>
+              `flex items-center space-x-2 p-2 rounded hover:bg-gray-100 ${
+                isActive ? 'bg-gray-200 font-semibold' : ''
+              }`
+            }
+          >
+            <FaUserCog />
+            <span>Users</span>
+          </NavLink>
+        )}
+        {hasAccess(['admin']) && (
+          <NavLink
+            to="/reports"
+            className={({ isActive }) =>
+              `flex items-center space-x-2 p-2 rounded hover:bg-gray-100 ${
+                isActive ? 'bg-gray-200 font-semibold' : ''
+              }`
+            }
+          >
+            <FaChartBar />
+            <span>Reports</span>
+          </NavLink>
+        )}
+        {hasAccess(['admin']) && (
+          <NavLink
+            to="/settings"
+            className={({ isActive }) =>
+              `flex items-center space-x-2 p-2 rounded hover:bg-gray-100 ${
+                isActive ? 'bg-gray-200 font-semibold' : ''
+              }`
+            }
+          >
+            <FaCog />
+            <span>Settings</span>
+          </NavLink>
+        )}
         <button
           onClick={onLogout}
-          className="w-full bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600"
+          className="flex items-center space-x-2 p-2 rounded hover:bg-red-100 text-red-600"
         >
-          Logout
+          <FaSignOutAlt />
+          <span>Logout</span>
         </button>
-      </div>
+      </nav>
     </div>
   );
-}
+};
+
+export default Sidebar;
