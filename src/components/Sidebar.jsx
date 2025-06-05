@@ -1,24 +1,21 @@
-// === src/components/Sidebar.jsx ===
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import routes from '../routes/routeConfig';
+import routes from '../routes/routeConfig'; // Assuming routeConfig contains route definitions
 import { FiLogOut } from 'react-icons/fi';
 
 export default function Sidebar({ userRole, onLogout }) {
-  // robust normalisation (trim + lower-case)
+  // Normalize the user role (trim + lowercase)
   const normalizedRole = userRole?.trim().toLowerCase();
 
-  // ⬇️ DEBUG – this should appear in DevTools console
-  console.log('Sidebar → userRole:', userRole, '| normalized:', normalizedRole);
+  // If there's no userRole yet, show loading state
+  if (!userRole) {
+    return <div className="w-64 bg-gray-800 h-screen text-white p-6">Loading...</div>;
+  }
 
+  // Filter routes based on the user's role
   const visibleRoutes = routes.filter(route =>
     route.roles.some(r => r.trim().toLowerCase() === normalizedRole)
   );
-if (!userRole) {
-  return <div className="w-64 bg-gray-800 h-screen text-white p-6">Loading...</div>;
-}
-  // ⬇️ DEBUG – see how many routes survive the filter
-  console.log('Sidebar → visibleRoutes:', visibleRoutes);
 
   return (
     <div className="w-64 bg-gray-800 h-screen text-white flex flex-col">
@@ -27,14 +24,12 @@ if (!userRole) {
       </div>
 
       <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
-        {visibleRoutes.map(r => (
+        {visibleRoutes.map((r) => (
           <NavLink
-            key={r.path}
+            key={r.path + r.name}  // Ensure the key is unique
             to={r.path}
             className={({ isActive }) =>
-              `block px-4 py-2 rounded hover:bg-gray-700 ${
-                isActive ? 'bg-gray-700' : ''
-              }`
+              `block px-4 py-2 rounded hover:bg-gray-700 ${isActive ? 'bg-gray-700' : ''}`
             }
           >
             {r.name}

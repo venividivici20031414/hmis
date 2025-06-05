@@ -1,7 +1,7 @@
 // === src/routes/routeConfig.js ===
 import Dashboard from '../pages/Dashboard';
 import Patients from '../pages/Patients';
-import Appointments from '../pages/Appointments';
+import AppointmentsPage from '../pages/AppointmentsPage'; // <- Use this only
 import Consulting from '../pages/Consulting';
 import Lab from '../pages/Lab';
 import Pharmacy from '../pages/Pharmacy';
@@ -13,7 +13,7 @@ import Settings from '../pages/Settings';
 const routes = [
   { path: '/dashboard', name: 'Dashboard', component: Dashboard, roles: ['admin', 'doctor', 'nurse'] },
   { path: '/patients', name: 'Patient Registration', component: Patients, roles: ['admin', 'nurse'] },
-  { path: '/appointments', name: 'Appointments', component: Appointments, roles: ['admin', 'receptionist'] },
+  { path: '/appointments', name: 'Appointments', component: AppointmentsPage, roles: ['admin', 'receptionist', 'doctor'] }, // Fixed here
   { path: '/consulting', name: 'Consulting', component: Consulting, roles: ['admin', 'doctor'] },
   { path: '/lab', name: 'Lab', component: Lab, roles: ['admin', 'lab technician'] },
   { path: '/pharmacy', name: 'Pharmacy', component: Pharmacy, roles: ['admin', 'pharmacist'] },
