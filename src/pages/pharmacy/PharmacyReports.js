@@ -1,8 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import PouchDB from 'pouchdb';
-
-const issueDB = new PouchDB('pharmacy_issues');
-const stockDB = new PouchDB('pharmacy_stock');
 
 export default function PharmacyReports() {
   const [issueReports, setIssueReports] = useState([]);
@@ -13,11 +9,18 @@ export default function PharmacyReports() {
   }, []);
 
   const loadReports = async () => {
-    const issues = await issueDB.allDocs({ include_docs: true });
-    const stock = await stockDB.allDocs({ include_docs: true });
+    try {
+      const issuesRes = await fetch('/api/pharmacy-reports/issues');
+      const issuesData = await issuesRes.json();
 
-    setIssueReports(issues.rows.map(row => row.doc));
-    setStockReports(stock.rows.map(row => row.doc));
+      const stockRes = await fetch('/api/pharmacy-reports/stock');
+      const stockData = await stockRes.json();
+
+      setIssueReports(issuesData);
+      setStockReports(stockData);
+    } catch (error) {
+      console.error('Error loading reports:', error);
+    }
   };
 
   return (
@@ -28,7 +31,9 @@ export default function PharmacyReports() {
         <h3 className="font-semibold">Issued Drugs</h3>
         <ul>
           {issueReports.map(entry => (
-            <li key={entry._id}>{entry.date} - {entry.drugName} - {entry.quantity} units to {entry.patientName}</li>
+            <li key={entry._id}>
+              {new Date(entry.date).toLocaleDateString()} - {entry.drugName} - {entry.quantity} units to {entry.patientName}
+            </li>
           ))}
         </ul>
       </section>
@@ -37,7 +42,9 @@ export default function PharmacyReports() {
         <h3 className="font-semibold">Stock Records</h3>
         <ul>
           {stockReports.map(entry => (
-            <li key={entry._id}>{entry.date} - {entry.drugName} - {entry.quantity} units</li>
+            <li key={entry._id}>
+              {new Date(entry.date).toLocaleDateString()} - {entry.drugName} - {entry.quantity} units
+            </li>
           ))}
         </ul>
       </section>

@@ -1,40 +1,32 @@
-import React, { useEffect, useState } from 'react';
-import PouchDB from 'pouchdb';
+// backend/routes/pharmacy.js
 
-const db = new PouchDB('pharmacy_inventory');
+const express = require('express');
+const router = express.Router();
+const mongoose = require('mongoose');
 
-export default function PharmacyExpiryAlerts() {
-  const [expiringDrugs, setExpiringDrugs] = useState([]);
+const drugSchema = new mongoose.Schema({
+  drugName: String,
+  expiryDate: Date,
+  // other fields as needed
+});
 
-  useEffect(() => {
-    checkExpiries();
-  }, []);
+const Drug = mongoose.model('Drug', drugSchema);
 
-  const checkExpiries = async () => {
-    const result = await db.allDocs({ include_docs: true });
+router.get('/expiry-alerts', async (req, res) => {
+  try {
     const today = new Date();
     const threshold = new Date();
-    threshold.setDate(today.getDate() + 30); // 30 days ahead
+    threshold.setDate(today.getDate() + 30);
 
-    const alerts = result.rows
-      .map(row => row.doc)
-      .filter(doc => new Date(doc.expiryDate) <= threshold);
+    // Find drugs with expiryDate <= threshold
+    const expiringDrugs = await Drug.find({
+      expiryDate: { $lte: threshold }
+    }).sort({ expiryDate: 1 });
 
-    setExpiringDrugs(alerts);
-  };
+    res.json(expiringDrugs);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
 
-  return (
-    <div>
-      <h2 className="text-xl font-bold mb-4">Expiry Alerts</h2>
-      {expiringDrugs.length === 0 ? (
-        <p>No drugs nearing expiry.</p>
-      ) : (
-        <ul>
-          {expiringDrugs.map(drug => (
-            <li key={drug._id}>{drug.drugName} expiring on {drug.expiryDate}</li>
-          ))}
-        </ul>
-      )}
-    </div>
-  );
-}
+module.exports = router;

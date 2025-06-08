@@ -15,21 +15,22 @@ app.use(cors());
 app.use(express.json());
 
 // MongoDB Connection
-mongoose.connect(process.env.MONGO_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-})
-.then(() => {
-  console.log("MongoDB connected");
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => {
+    console.log("MongoDB connected");
 
-  // Seed admin user once DB is connected
-  seedAdmin();
-})
-.catch(err => console.error("MongoDB connection error:", err));
+    // Seed admin user once DB is connected
+    seedAdmin();
+  })
+  .catch(err => console.error("MongoDB connection error:", err));
 
 // Routes
-app.use('/api/auth', require('./routes/auth'));     // Login & Signup
-app.use('/api/users', require('./routes/users'));   // User Management (Protected)
+app.use('/api/auth', require('./routes/auth'));         // Login & Signup
+app.use('/api/users', require('./routes/users'));       // User Management
+app.use('/api/pharmacy-stock', require('./routes/pharmacyStock')); // ✅ Pharmacy stock
+app.use('/api/pharmacy-issues', require('./routes/pharmacyIssue')); // ✅ Pharmacy issue
+app.use('/api/pharmacy-expiry', require('./routes/pharmacyExpiry')); // Pharmacy Expiry Alert
+
 
 // Start server
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

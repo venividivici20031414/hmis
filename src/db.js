@@ -1,20 +1,38 @@
-import PouchDB from 'pouchdb-browser';
-import PouchDBFind from 'pouchdb-find';
+import React, { useEffect, useState } from 'react';
 
-PouchDB.plugin(PouchDBFind);
+export default function PharmacyExpiryAlerts() {
+  const [expiringDrugs, setExpiringDrugs] = useState([]);
 
-const db = new PouchDB('emr_database');
+  useEffect(() => {
+    fetchExpiryAlerts();
+  }, []);
 
-// Optional sync setup (if CouchDB remote URL exists)
-const remoteCouch = 'http://localhost:5984/emr_database'; // replace with actual URL if available
+  const fetchExpiryAlerts = async () => {
+    try {
+      // Call your backend API endpoint that fetches data from MongoDB
+      const response = await fetch('/api/pharmacy/expiry-alerts');
+      if (!response.ok) throw new Error('Failed to fetch expiry alerts');
+      const data = await response.json();
+      setExpiringDrugs(data);
+    } catch (error) {
+      console.error('Error fetching expiry alerts:', error);
+    }
+  };
 
-db.sync(remoteCouch, {
-  live: true,
-  retry: true,
-}).on('change', info => {
-  console.log('DB Sync Change:', info);
-}).on('error', err => {
-  console.error('DB Sync Error:', err);
-});
-
-export default db;
+  return (
+    <div>
+      <h2 className="text-xl font-bold mb-4">Expiry Alerts</h2>
+      {expiringDrugs.length === 0 ? (
+        <p>No drugs nearing expiry.</p>
+      ) : (
+        <ul>
+          {expiringDrugs.map(drug => (
+            <li key={drug._id}>
+              {drug.drugName} expiring on {new Date(drug.expiryDate).toLocaleDateString()}
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}

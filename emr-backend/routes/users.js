@@ -1,44 +1,111 @@
-// routes/users.js
 const express = require('express');
 const router = express.Router();
 const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const { verifyToken, authorizeRoles } = require('../middleware/authMiddleware');
+const { body, validationResult } = require('express-validator');
 
-// Get all users – Only Admins
-router.get('/', verifyToken, authorizeRoles('Admin'), async (req, res) => {
+/**
+ * @route   GET /api/users
+ * @desc    Get all users - Admin only
+ * @access  Private (Admin)
+ */
+router.get(
+  '/',
+  verifyToken,
+  authorizeRoles('Admin'),
+  async (req, res) => {
+    try {
+      const users = await User.find().select('-password'); // Exclude passwords from response
+      res.json(users);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ message: 'Server error' });
+    }
+  }
+);
+
+/**
+ * @route   DELETE /api/users/:id
+ * @desc    Delete user - Admin only
+ * @access  Private (Admin)
+ */
+router.delete('/:id', verifyToken, authorizeRoles('Admin'), async (req, res) => {
   try {
-    const users = await User.find().select('-password'); // exclude passwords
-    res.json(users);
+    const user = await User.findByIdAndDelete(req.params.id);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+    res.json({ message: 'User deleted' });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    console.error(err);
+    res.status(500).json({ message: 'Server error' });
   }
 });
 
-// Create a new user – Only Admins
-router.post('/', verifyToken, authorizeRoles('Admin'), async (req, res) => {
-  try {
-    const { username, password, role } = req.body;
-    const existingUser = await User.findOne({ username });
-    if (existingUser) {
-      return res.status(400).json({ message: 'User already exists' });
+/**
+ * @route   POST /api/users
+ * @desc    Create a new user - Admin only
+ * @access  Private (Admin)
+ */
+router.post(
+  '/',
+  verifyToken,
+  authorizeRoles('Admin'),
+  // Validation middleware
+  body('username').isString().trim().notEmpty().withMessage('Username is required'),
+  body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters'),
+  body('role').isString().trim().notEmpty().withMessage('Role is required'),
+  async (req, res) => {
+    // Validate inputs
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser = new User({
-      username,
-      password: hashedPassword,
-      role,
-    });
+    try {
+      const { username, password, role } = req.body;
 
-    await newUser.save();
-    res.status(201).json({ message: 'User created successfully' });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
+      // Log the role to debug
+      console.log('Received role:', role);
+
+      // Capitalize the role to ensure it's valid ('nurse' -> 'Nurse', etc.)
+      const capitalizedRole = role.charAt(0).toUpperCase() + role.slice(1).toLowerCase();
+
+      // Log the capitalized role to check the result
+      console.log('Capitalized role:', capitalizedRole);
+
+      // Check if user already exists
+      const existingUser = await User.findOne({ username });
+      if (existingUser) {
+        return res.status(400).json({ message: 'User already exists' });
+      }
+
+      // Hash the password before saving it
+      const hashedPassword = await bcrypt.hash(password, 10);
+
+      // Create new user
+      const newUser = new User({
+        username,
+        password: hashedPassword,
+        role: capitalizedRole,  // Save capitalized role
+      });
+
+      // Save the new user
+      await newUser.save();
+
+      // Respond with success message
+      res.status(201).json({ message: 'User created successfully' });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ message: 'Server error' });
+    }
   }
-});
+);
 
-// Get my profile – Any logged-in user
+/**
+ * @route   GET /api/users/me
+ * @desc    Get profile of logged-in user
+ * @access  Private
+ */
 router.get('/me', verifyToken, async (req, res) => {
   try {
     const user = await User.findById(req.user.userId).select('-password');
@@ -46,7 +113,8 @@ router.get('/me', verifyToken, async (req, res) => {
 
     res.json(user);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    console.error(err);
+    res.status(500).json({ message: 'Server error' });
   }
 });
 

@@ -9,13 +9,15 @@ export default function App() {
   const [user, setUser] = useState({ username: 'test', role: 'admin' }); // Simulated logged-in user
 
   const handleLogin = (userInfo) => {
-    console.log("App → Logged-in user object:", userInfo);
-    if (!userInfo?.role) {
-      console.warn("No user role provided!");
-    }
-    setUser(userInfo);
+  const normalizedUser = {
+    ...userInfo,
+    role: userInfo.role.toLowerCase(),
   };
-
+  localStorage.setItem('user', JSON.stringify(normalizedUser));
+  localStorage.setItem('token', 'sample-token');
+  setUser(normalizedUser);
+  navigate('/dashboard');
+};
   const handleLogout = () => {
     setUser(null);
   };
@@ -32,14 +34,14 @@ export default function App() {
         {/* Main Content Area with left padding for Sidebar */}
         <div className="flex-1 pl-64 p-6 bg-gray-100 min-h-screen">
           <Routes>
-            {routeConfig
-              .filter(route => route.roles.includes(user.role))
-              .map(route => (
-                <Route key={route.path} path={route.path} element={<route.component />} />
-              ))}
-            {/* Fallback route */}
-            <Route path="*" element={<Navigate to="/dashboard" />} />
-          </Routes>
+  {routeConfig
+    .filter(route => route.roles.includes(user?.role?.toLowerCase()))
+    .map(route => (
+      <Route key={route.path} path={route.path} element={<route.component />} />
+    ))}
+  <Route path="*" element={<Navigate to="/dashboard" />} />
+</Routes>
+
         </div>
       </div>
     </Router>
