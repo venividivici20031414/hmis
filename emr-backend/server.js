@@ -27,10 +27,9 @@ mongoose.connect(process.env.MONGO_URI)
 // Routes
 app.use('/api/auth', require('./routes/auth'));         // Login & Signup
 app.use('/api/users', require('./routes/users'));       // User Management
-app.use('/api/pharmacy-stock', require('./routes/pharmacyStock')); // ✅ Pharmacy stock
-app.use('/api/pharmacy-issues', require('./routes/pharmacyIssue')); // ✅ Pharmacy issue
+app.use('/api/pharmacy-stock', require('./routes/pharmacyStock')); // Pharmacy stock
+app.use('/api/pharmacy-issues', require('./routes/pharmacyIssue')); // Corrected path for pharmacy issues
 app.use('/api/pharmacy-expiry', require('./routes/pharmacyExpiry')); // Pharmacy Expiry Alert
-
 
 // Start server
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
