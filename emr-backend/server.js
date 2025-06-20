@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const bcrypt = require('bcrypt');
 const User = require('./models/User');
+const patientRoutes = require('./routes/patients'); // Import patient routes
 
 dotenv.config();
 
@@ -30,6 +31,7 @@ app.use('/api/users', require('./routes/users'));       // User Management
 app.use('/api/pharmacy-stock', require('./routes/pharmacyStock')); // Pharmacy stock
 app.use('/api/pharmacy-issues', require('./routes/pharmacyIssue')); // Corrected path for pharmacy issues
 app.use('/api/pharmacy-expiry', require('./routes/pharmacyExpiry')); // Pharmacy Expiry Alert
+app.use('/api/patients', patientRoutes); // Connect patient routes to /api/patients
 
 // Start server
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
