@@ -14,6 +14,8 @@ import {
   FaPills,
   FaChevronDown,
   FaChevronUp,
+  FaXRay,
+  FaUniversity,
 } from 'react-icons/fa';
 
 const Sidebar = ({ userRole, onLogout }) => {
@@ -91,6 +93,36 @@ const Sidebar = ({ userRole, onLogout }) => {
           </NavLink>
         )}
 
+        {/* Radiology */}
+        {hasAccess(['admin', 'radiologist']) && (
+          <NavLink
+            to="/radiology"
+            className={({ isActive }) =>
+              `flex items-center space-x-2 p-2 rounded hover:bg-gray-100 ${
+                isActive ? 'bg-gray-200 font-semibold' : ''
+              }`
+            }
+          >
+            <FaXRay />
+            <span>Radiology</span>
+          </NavLink>
+        )}
+
+        {/* NHIA Integration */}
+        {hasAccess(['admin', 'nhia officer']) && (
+          <NavLink
+            to="/nhia-integration"
+            className={({ isActive }) =>
+              `flex items-center space-x-2 p-2 rounded hover:bg-gray-100 ${
+                isActive ? 'bg-gray-200 font-semibold' : ''
+              }`
+            }
+          >
+            <FaUniversity />
+            <span>NHIA Integration</span>
+          </NavLink>
+        )}
+
         {/* Pharmacy Main & Submenu */}
         {hasAccess(['admin', 'pharmacist']) && (
           <div>
@@ -163,43 +195,41 @@ const Sidebar = ({ userRole, onLogout }) => {
           </NavLink>
         )}
         {hasAccess(['admin']) && (
-          <NavLink
-            to="/users"
-            className={({ isActive }) =>
-              `flex items-center space-x-2 p-2 rounded hover:bg-gray-100 ${
-                isActive ? 'bg-gray-200 font-semibold' : ''
-              }`
-            }
-          >
-            <FaUserCog />
-            <span>Users</span>
-          </NavLink>
-        )}
-        {hasAccess(['admin']) && (
-          <NavLink
-            to="/reports"
-            className={({ isActive }) =>
-              `flex items-center space-x-2 p-2 rounded hover:bg-gray-100 ${
-                isActive ? 'bg-gray-200 font-semibold' : ''
-              }`
-            }
-          >
-            <FaChartBar />
-            <span>Reports</span>
-          </NavLink>
-        )}
-        {hasAccess(['admin']) && (
-          <NavLink
-            to="/settings"
-            className={({ isActive }) =>
-              `flex items-center space-x-2 p-2 rounded hover:bg-gray-100 ${
-                isActive ? 'bg-gray-200 font-semibold' : ''
-              }`
-            }
-          >
-            <FaCog />
-            <span>Settings</span>
-          </NavLink>
+          <>
+            <NavLink
+              to="/users"
+              className={({ isActive }) =>
+                `flex items-center space-x-2 p-2 rounded hover:bg-gray-100 ${
+                  isActive ? 'bg-gray-200 font-semibold' : ''
+                }`
+              }
+            >
+              <FaUserCog />
+              <span>Users</span>
+            </NavLink>
+            <NavLink
+              to="/reports"
+              className={({ isActive }) =>
+                `flex items-center space-x-2 p-2 rounded hover:bg-gray-100 ${
+                  isActive ? 'bg-gray-200 font-semibold' : ''
+                }`
+              }
+            >
+              <FaChartBar />
+              <span>Reports</span>
+            </NavLink>
+            <NavLink
+              to="/settings"
+              className={({ isActive }) =>
+                `flex items-center space-x-2 p-2 rounded hover:bg-gray-100 ${
+                  isActive ? 'bg-gray-200 font-semibold' : ''
+                }`
+              }
+            >
+              <FaCog />
+              <span>Settings</span>
+            </NavLink>
+          </>
         )}
         <button
           onClick={onLogout}

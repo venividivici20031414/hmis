@@ -5,9 +5,19 @@ export default function Users() {
   const [form, setForm] = useState({ username: '', role: '', password: '' });
   const [error, setError] = useState('');
 
-  const roles = ['admin', 'doctor', 'nurse', 'lab technician', 'pharmacist', 'billing officer', 'receptionist'];
+ const roles = [
+  'admin',
+  'doctor',
+  'nurse',
+  'lab technician',
+  'pharmacist',
+  'billing officer',
+  'receptionist',
+  'radiologist',          // ✅ New
+  'nhia officer'          // ✅ New
+];
 
-  // Fetch users from backend
+
   const fetchUsers = async () => {
     try {
       const token = localStorage.getItem('token');
@@ -32,12 +42,10 @@ export default function Users() {
     fetchUsers();
   }, []);
 
-  // Handle form input changes
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  // Handle user creation via backend API
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!form.username || !form.role || !form.password) {
@@ -61,9 +69,7 @@ export default function Users() {
         throw new Error(data.message || 'Failed to create user');
       }
 
-      // Optionally: refetch user list after creation
       await fetchUsers();
-
       setForm({ username: '', role: '', password: '' });
       setError('');
     } catch (err) {
@@ -71,7 +77,6 @@ export default function Users() {
     }
   };
 
-  // Handle user deletion via backend API
   const handleDelete = async (userId) => {
     if (!window.confirm('Are you sure you want to delete this user?')) return;
 
@@ -88,31 +93,34 @@ export default function Users() {
       }
 
       setUsers(users.filter(user => user._id !== userId));
+      
       setError('');
     } catch (err) {
       alert(err.message);
     }
   };
+  
 
   return (
-    <div>
+    
+    <div className="p-6">
       <h2 className="text-2xl font-bold mb-4">User Management</h2>
 
-      {error && <div className="text-red-600 mb-4">{error}</div>}
+      {error && <div className="text-red-600 mb-4 font-semibold">{error}</div>}
 
-      <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+      <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
         <input
           name="username"
           placeholder="Username"
           value={form.username}
           onChange={handleChange}
-          className="input"
+          className="border border-gray-300 rounded px-4 py-2 w-full"
         />
         <select
           name="role"
           value={form.role}
           onChange={handleChange}
-          className="input"
+          className="border border-gray-300 rounded px-4 py-2 w-full"
         >
           <option value="">Select Role</option>
           {roles.map(role => (
@@ -125,9 +133,14 @@ export default function Users() {
           type="password"
           value={form.password}
           onChange={handleChange}
-          className="input"
+          className="border border-gray-300 rounded px-4 py-2 w-full"
         />
-        <button type="submit" className="btn col-span-1 md:col-span-3">Add User</button>
+        <button
+          type="submit"
+          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
+        >
+          Add User
+        </button>
       </form>
 
       <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
@@ -153,6 +166,13 @@ export default function Users() {
               </td>
             </tr>
           ))}
+          {users.length === 0 && (
+            <tr>
+              <td colSpan="3" className="py-4 px-4 text-center text-gray-500">
+                No users found.
+              </td>
+            </tr>
+          )}
         </tbody>
       </table>
     </div>

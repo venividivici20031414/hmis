@@ -3,15 +3,11 @@ const mongoose = require('mongoose');
 const UserSchema = new mongoose.Schema({
   username: { type: String, required: true, unique: true },
   password: { type: String, required: true },
-  role: { type: String, enum: ['Admin', 'Doctor', 'Nurse', 'Lab technician', 'Pharmacist', 'Billing officer', 'Receptionist'], default: 'Doctor' },
-});
-
-// Trim spaces around role before saving
-UserSchema.pre('save', function(next) {
-  if (this.role) {
-    this.role = this.role.trim();
-  }
-  next();
-});
+  role: {
+    type: String,
+    enum: ['Admin', 'Doctor', 'Nurse', 'Lab Technician', 'Pharmacist', 'Billing Officer', 'Receptionist', 'Radiologist', 'NHIA Officer'],
+    required: true,
+  },
+}, { timestamps: true });
 
 module.exports = mongoose.model('User', UserSchema);

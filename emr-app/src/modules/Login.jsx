@@ -30,6 +30,7 @@ const Login = ({ onLogin }) => {
       console.log('Login successful:', user);
 
       onLogin(user); // Notify parent component
+      console.log("Logged in user role:", user.role);
 
       navigate('/dashboard'); // Redirect to dashboard after login
 
